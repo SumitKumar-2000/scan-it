@@ -14,7 +14,7 @@ async function getProductByCompany(companyId) {
   if (!API_URL) throw new Error("Missing API_URL in environment");
 
   const res = await fetch(`${API_URL}/api/companies/${companyId}/products`, {
-    next: { revalidate: 60 },
+    cache: "no-store",
   });
 
   if (!res.ok) throw new Error("Failed to fetch products");
