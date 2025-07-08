@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  website     String?   @db.VarChar(255)
+  created_at  DateTime  @default(now()) @map("created_at")
+  logo_url    String?   @map("logo_url") @db.VarChar(255)
+  updated_at  DateTime  @updatedAt @map("updated_at")
+  description String
+  products    Product[]
+}
+
+model Product {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  company_id  Int          @map("company_id")
+  created_at  DateTime     @default(now()) @map("created_at")
+  model_no    String?      @map("model_no") @db.VarChar(100)
+  release_at  DateTime?    @map("release_at") @db.Date
+  updated_at  DateTime     @updatedAt @map("updated_at")
+  category    String
+  description String
+  company     Company      @relation(fields: [company_id], references: [id])
+  manuals     UserManual[]
+}
+
+model Category {
+  id   Int          @id @default(autoincrement())
+  name String
+  code String       @unique
+  type CategoryType
+}
+
+model UserManual {
+  id           Int             @id @default(autoincrement())
+  language     String?         @default("en") @db.VarChar(50)
+  version      String?         @default("1.0") @db.VarChar(50)
+  created_at   DateTime        @default(now()) @map("created_at")
+  product_id   Int             @map("product_id")
+  published_at DateTime?       @map("published_at") @db.Date
+  updated_at   DateTime        @updatedAt @map("updated_at")
+  sections     ManualSection[]
+  product      Product         @relation(fields: [product_id], references: [id])
+}
+
+model ManualSection {
+  id          Int        @id @default(autoincrement())
+  title       String     @db.VarChar(255)
+  content     String
+  created_at  DateTime   @default(now()) @map("created_at")
+  manual_id   Int        @map("manual_id")
+  order_index Int        @default(0) @map("order_index")
+  updated_at  DateTime   @updatedAt @map("updated_at")
+  manual      UserManual @relation(fields: [manual_id], references: [id])
+}
+
+model Media {
+  id         Int       @id @default(autoincrement())
+  type       String    @db.VarChar(50)
+  url        String
+  caption    String?
+  created_at DateTime  @default(now())
+  owner_id   Int?
+  owner_type String?
+  updated_at DateTime? @default(now()) @updatedAt @db.Timestamptz(6)
+  is_main    String?   @default("N") @db.Char(1)
+}
+
+enum CategoryType {
+  PRODUCT
+  COMPANY
+  OTHER
+}

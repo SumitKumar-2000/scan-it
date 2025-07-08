@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@prisma/*": ["../prisma/generated*"]
+    },
+  },
+  "include": ["next-env.d.ts"],
+  "exclude": ["node_modules",".next"],
+}
